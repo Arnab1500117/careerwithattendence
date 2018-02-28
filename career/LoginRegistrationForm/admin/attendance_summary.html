@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<script type="text/javascript">
+var datefield=document.createElement("input")
+datefield.setAttribute("type", "date")
+//if browser doesn't support input type="date", load files for jQuery UI Date Picker
+document.write('<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />\n')
+document.write('<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"><\/script>\n')
+document.write('<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"><\/script>\n') 
+
+</script>
+
+<script>
+//if browser doesn't support input type="date", initialize date picker widget:
+jQuery(function($){ //on document.ready
+$('.date').datepicker({ dateFormat: 'yy-mm-dd',
+                                 });
+         })
+
+
+
+</script>
+
+<title>View Attendance Summary</title>
+</head>
+
+<body>
+<h1>ATTENDANCE SUMMARY</h1>
+
+   <form name="myForm" method="post" action="attendance_summary.php">
+	
+	<td>DATE FROM:<input class="date" type="text" name="date_from" placeholder="0000-00-00"/></td>
+	<td>DATE TO:<input class="date" type="text" name="date_to" placeholder="0000-00-00"/></td>
+	</br></br>
+	<td><button type="submit" name="leave">VIEW SUMMARY</button></td>
+	
+	</form>
+	
+</body>
+</html>
