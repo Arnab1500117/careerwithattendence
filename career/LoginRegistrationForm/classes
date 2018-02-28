@@ -1,0 +1,145 @@
+<?php include_once "../lib/Database.php"; ?>
+<?php include_once "../helpers/Format.php"; ?>
+<?php include_once "../lib/Session.php"; ?>
+
+<?php
+	/**
+	* 
+	*/
+	class Attendence
+	{
+		private $db;
+		private $fm;
+
+		public function __construct()
+	
+		{
+			$this->db = new Database();
+			$this->fm = new Format();
+		}	
+
+		public function markAttendence($data,  $userId, $serverIP, $date, $day, $time, $month){
+
+
+			$query = "SELECT * FROM tbl_attendence WHERE userId = '$userId' AND attendence_date = '$date'";
+			$res = $this->db->select($query)->fetch_assoc();
+			$outdate = $res['outdate'];
+			if ($outdate = $date) {
+			?>
+			<script>var my_time = new Date(); alert('You are already checked In today... '+my_time);
+                        window.location = 'dailyAttendance.php';
+                        </script>
+			<?php
+			
+			}
+			$late_reason 	= $this->fm->validation($data['late_reason']);
+			$original_time  = $this->fm->validation($data['original_time']);
+			$errand_place_in = $this->fm->validation($data['errand_place_in']);
+			//$errand_for_in = $this->fm->validation($data['errand_for_in']);
+			$errand_from_in = $this->fm->validation($data['errand_from_in']);
+			$errand_to_in = $this->fm->validation($data['errand_to_in']);
+
+			$late_reason = mysqli_real_escape_string($this->db->link, $late_reason);
+			$original_time = mysqli_real_escape_string($this->db->link, $original_time);
+			$errand_place_in = mysqli_real_escape_string($this->db->link, $errand_place_in);
+			//$errand_for_in = mysqli_real_escape_string($this->db->link, $errand_for_in);
+			$errand_from_in = mysqli_real_escape_string($this->db->link, $errand_from_in);
+			$errand_to_in = mysqli_real_escape_string($this->db->link, $errand_to_in);
+			
+
+			$query = "INSERT INTO tbl_attendence(userId, late_reason, original_time, errand_place_in, errand_for_in, errand_from_in, attendence_time, day, attendence_date, month, inip) VALUES('$userId', '$late_reason', '$original_time', '$errand_place_in', '$errand_from_in', '$errand_to_in', '$time', '$day', '$date', '$month', '$serverIP')";
+			$res = $this->db->insert($query);
+			if ($res) {
+							?>
+			<script>var my_time = new Date(); alert('Attendance Taken at '+my_time);
+                        window.location = 'dailyAttendance.php';
+                        </script>
+			<?php
+			}else{
+				$msg = "Attendence Not Marked";
+				return $msg;
+			}
+
+
+		}
+
+		public function getUseratten($userId){
+			$query = "SELECT * FROM tbl_attendence WHERE userId = '$userId' ORDER BY id DESC LIMIT 7";
+			$res = $this->db->select($query);
+			return $res;
+		}
+
+
+
+		public function markOutAttendence($data, $userId, $serverIPout, $date, $day, $time, $month){
+			$query = "SELECT * FROM tbl_attendence WHERE userId = '$userId' AND attendence_date = '$date'";
+			$res = $this->db->select($query);
+			if (!$res) {
+			?>
+			<script>var my_time = new Date(); alert('You are not check In today... '+my_time);
+                        window.location = 'dailyAttendance.php';
+                        </script>
+			<?php
+			}
+
+			$query = "SELECT * FROM tbl_attendence WHERE userId = '$userId' AND outdate = '$date'";
+			$res = $this->db->select($query)->fetch_assoc();
+			$outdate = $res['outdate'];
+			if ($outdate = $date) {
+			?>
+			<script>var my_time = new Date(); alert('You are already checked out today... '+my_time);
+                        window.location = 'dailyAttendance.php';
+                        </script>
+			<?php
+			
+			}
+
+			$early_leave 		= $this->fm->validation($data['early_leave']);
+			$ongoing_works  = $this->fm->validation($data['ongoing_works']);
+			$incase_errand_place = $this->fm->validation($data['incase_errand_place']);
+
+			$errand_from_out = $this->fm->validation($data['errand_from_out']);
+			$errand_to_out = $this->fm->validation($data['errand_to_out']);
+
+			$early_leave = mysqli_real_escape_string($this->db->link, $early_leave);
+			$ongoing_works = mysqli_real_escape_string($this->db->link, $ongoing_works);
+			$incase_errand_place = mysqli_real_escape_string($this->db->link, $incase_errand_place);
+			
+			$errand_from_out = mysqli_real_escape_string($this->db->link, $errand_from_out);
+			$errand_to_out = mysqli_real_escape_string($this->db->link, $errand_to_out);
+			
+
+			$query = "UPDATE tbl_attendence 
+			SET
+			early_leave = '$early_leave',
+			ongoing_works = '$ongoing_works',
+			incase_errand_place = '$incase_errand_place',
+			
+			errand_from_out = '$errand_from_out',
+			errand_to_out = '$errand_to_out',
+			outtime = '$time',
+			outday = '$day',
+			outmonth = '$month',
+			outdate = '$date'
+
+			WHERE userId = '$userId' AND attendence_date = '$date'";
+			$res = $this->db->insert($query);
+			if ($res) {
+							?>
+			<script>var my_time = new Date(); alert('Attendance Taken at '+my_time);
+                        window.location = 'dailyAttendance.php';
+                        </script>
+			<?php
+			}else{
+				$msg = "Attendence Not Marked";
+				return $msg;
+			}
+
+		}
+
+		public function getUseroutatten($userId){
+			$query = "SELECT * FROM tbl_attendence WHERE userId = '$userId' ORDER BY id DESC LIMIT 7";
+			$res = $this->db->select($query);
+			return $res;
+		}
+}
